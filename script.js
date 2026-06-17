@@ -401,7 +401,7 @@ function detectSnap() {
 
         }
 
-        if (peak > 270) {
+        if (peak > 250) {
 
             console.log(
                 "Snap Detected!"
