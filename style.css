@@ -1,0 +1,640 @@
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+html,
+body{
+width:100%;
+height:100%;
+overflow:hidden;
+background:#000;
+color:white;
+}
+
+/* ========================= */
+/* SETUP SCREEN */
+/* ========================= */
+
+.setup-screen{
+width:100%;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+background:
+linear-gradient(
+135deg,
+#090909,
+#151515,
+#1f1f1f
+);
+}
+
+.setup-card{
+width:100%;
+max-width:500px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,0.15);
+border-radius:30px;
+padding:35px;
+box-shadow:
+0 0 50px rgba(0,0,0,.5);
+}
+
+.setup-card h1{
+font-size:42px;
+text-align:center;
+margin-bottom:10px;
+font-weight:700;
+}
+
+.subtitle{
+text-align:center;
+opacity:.8;
+margin-bottom:30px;
+}
+
+.section{
+margin-bottom:25px;
+}
+
+.section label{
+display:block;
+margin-bottom:10px;
+font-size:15px;
+font-weight:500;
+}
+
+input[type="time"],
+input[type="file"]{
+width:100%;
+padding:14px;
+border:none;
+outline:none;
+border-radius:15px;
+background:rgba(255,255,255,.1);
+color:white;
+}
+
+#previewTime{
+height:70px;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:40px;
+font-weight:600;
+border-radius:20px;
+background:rgba(255,255,255,.08);
+}
+
+#activateMagicBtn{
+width:100%;
+padding:16px;
+border:none;
+cursor:pointer;
+border-radius:18px;
+font-size:18px;
+font-weight:600;
+color:white;
+background:
+linear-gradient(
+135deg,
+#4f46e5,
+#7c3aed
+);
+transition:.3s;
+}
+
+#activateMagicBtn:hover{
+transform:translateY(-3px);
+}
+
+.instructions{
+margin-top:20px;
+padding:20px;
+border-radius:20px;
+background:rgba(255,255,255,.05);
+}
+
+.instructions h3{
+margin-bottom:10px;
+}
+
+.instructions ul{
+padding-left:18px;
+}
+
+.instructions li{
+margin-bottom:8px;
+opacity:.85;
+}
+
+/* ========================= */
+/* LOCK SCREEN */
+/* ========================= */
+
+.lock-screen{
+position:relative;
+width:100%;
+height:100vh;
+overflow:hidden;
+background-image:url(
+"https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=2000"
+);
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
+}
+
+.hidden{
+display:none !important;
+}
+
+.wallpaper-overlay{
+position:absolute;
+inset:0;
+background:
+linear-gradient(
+to bottom,
+rgba(0,0,0,.20),
+rgba(0,0,0,.35),
+rgba(0,0,0,.50)
+);
+backdrop-filter:blur(2px);
+}
+
+/* ========================= */
+/* STATUS BAR */
+/* ========================= */
+
+.status-bar{
+position:absolute;
+top:12px;
+left:0;
+width:100%;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 20px;
+z-index:20;
+font-size:15px;
+font-weight:600;
+}
+
+.status-left{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.status-right{
+display:flex;
+align-items:center;
+gap:8px;
+}
+
+/* ========================= */
+/* DYNAMIC ISLAND */
+/* ========================= */
+
+.dynamic-island{
+position:absolute;
+top:18px;
+left:50%;
+transform:translateX(-50%);
+width:135px;
+height:34px;
+background:black;
+border-radius:50px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+z-index:20;
+box-shadow:
+0 0 20px rgba(0,0,0,.6);
+}
+
+.island-dot{
+width:10px;
+height:10px;
+border-radius:50%;
+background:#222;
+}
+
+.island-bar{
+width:45px;
+height:6px;
+border-radius:50px;
+background:#333;
+}
+
+/* ========================= */
+/* LOCK ICON */
+/* ========================= */
+
+.lock-icon{
+position:absolute;
+top:70px;
+left:50%;
+transform:translateX(-50%);
+font-size:28px;
+z-index:15;
+animation:lockFloat 3s infinite;
+}
+
+@keyframes lockFloat{
+
+0%{
+transform:
+translateX(-50%)
+translateY(0);
+}
+
+50%{
+transform:
+translateX(-50%)
+translateY(-5px);
+}
+
+100%{
+transform:
+translateX(-50%)
+translateY(0);
+}
+
+}
+
+/* ========================= */
+/* DATE */
+/* ========================= */
+
+.date-container{
+position:absolute;
+top:120px;
+width:100%;
+text-align:center;
+z-index:15;
+}
+
+.lock-day{
+font-size:24px;
+font-weight:500;
+}
+
+.lock-date{
+font-size:18px;
+opacity:.8;
+margin-top:5px;
+}
+/* ========================= */
+/* MAIN CLOCK */
+/* ========================= */
+
+.clock-container{
+position:absolute;
+top:170px;
+width:100%;
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:15;
+}
+
+.main-clock{
+font-size:120px;
+font-weight:200;
+letter-spacing:-5px;
+text-shadow:
+0 0 25px rgba(255,255,255,.2);
+transition:all .12s linear;
+}
+
+/* ========================= */
+/* VOICE STATUS */
+/* ========================= */
+
+
+
+/* ========================= */
+/* REALITY MESSAGE */
+/* ========================= */
+
+.reality-message{
+position:absolute;
+top:390px;
+width:100%;
+text-align:center;
+font-size:28px;
+font-weight:600;
+opacity:0;
+transform:scale(.7);
+transition:.5s;
+z-index:30;
+}
+
+.reality-message.show{
+opacity:1;
+transform:scale(1);
+}
+
+/* ========================= */
+/* NOTIFICATIONS */
+/* ========================= */
+
+.notifications{
+position:absolute;
+top:460px;
+left:50%;
+transform:translateX(-50%);
+width:90%;
+max-width:420px;
+z-index:15;
+}
+
+.notification-card{
+padding:14px;
+margin-bottom:12px;
+border-radius:20px;
+background:rgba(255,255,255,.12);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,.12);
+}
+
+.notification-title{
+font-size:15px;
+font-weight:600;
+margin-bottom:4px;
+}
+
+.notification-body{
+font-size:13px;
+opacity:.85;
+}
+
+/* ========================= */
+/* FLASHLIGHT BUTTON */
+/* ========================= */
+
+.flashlight-btn{
+position:absolute;
+bottom:120px;
+left:30px;
+width:60px;
+height:60px;
+display:flex;
+justify-content:center;
+align-items:center;
+border-radius:50%;
+background:rgba(255,255,255,.15);
+backdrop-filter:blur(20px);
+font-size:24px;
+z-index:20;
+}
+
+/* ========================= */
+/* CAMERA BUTTON */
+/* ========================= */
+
+.camera-btn{
+position:absolute;
+bottom:120px;
+right:30px;
+width:60px;
+height:60px;
+display:flex;
+justify-content:center;
+align-items:center;
+border-radius:50%;
+background:rgba(255,255,255,.15);
+backdrop-filter:blur(20px);
+font-size:24px;
+z-index:20;
+}
+
+/* ========================= */
+/* SWIPE INDICATOR */
+/* ========================= */
+
+.swipe-indicator{
+position:absolute;
+bottom:40px;
+width:100%;
+text-align:center;
+font-size:15px;
+font-weight:500;
+z-index:15;
+animation:swipeFloat 2s infinite;
+}
+
+@keyframes swipeFloat{
+
+0%{
+transform:translateY(0);
+}
+
+50%{
+transform:translateY(-8px);
+}
+
+100%{
+transform:translateY(0);
+}
+
+}
+
+/* ========================= */
+/* EXIT MAGIC BUTTON */
+/* ========================= */
+
+.exit-magic-btn{
+position:absolute;
+right:20px;
+bottom:210px;
+width:55px;
+height:55px;
+border:none;
+border-radius:50%;
+cursor:pointer;
+font-size:24px;
+color:white;
+background:rgba(255,255,255,.12);
+backdrop-filter:blur(15px);
+z-index:30;
+transition:.3s;
+}
+
+.exit-magic-btn:hover{
+transform:scale(1.1);
+}
+
+/* ========================= */
+/* FLASH EFFECT */
+/* ========================= */
+
+
+
+/* ========================= */
+/* MODAL */
+/* ========================= */
+
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.7);
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:999;
+}
+
+.modal-content{
+width:90%;
+max-width:350px;
+padding:30px;
+text-align:center;
+border-radius:25px;
+background:#181818;
+border:1px solid rgba(255,255,255,.1);
+}
+
+.modal-content h2{
+margin-bottom:25px;
+}
+
+.modal-buttons{
+display:flex;
+justify-content:center;
+gap:15px;
+}
+
+.modal-buttons button{
+padding:12px 20px;
+border:none;
+cursor:pointer;
+border-radius:12px;
+font-size:15px;
+color:white;
+background:#2d2d2d;
+}
+
+/* ========================= */
+/* RESTORATION ANIMATIONS */
+/* ========================= */
+
+.time-warp{
+animation:timeWarp 1.2s linear;
+}
+
+@keyframes timeWarp{
+
+0%{
+transform:scale(1);
+}
+
+25%{
+transform:scale(1.15);
+filter:blur(2px);
+}
+
+50%{
+transform:scale(.9);
+filter:blur(5px);
+}
+
+75%{
+transform:scale(1.1);
+filter:blur(2px);
+}
+
+100%{
+transform:scale(1);
+filter:blur(0);
+}
+
+}
+
+
+
+/* ========================= */
+/* DYNAMIC ISLAND EXPANSION */
+/* ========================= */
+
+.dynamic-island.expand{
+width:250px;
+transition:.5s;
+}
+
+.dynamic-island.expand .island-bar{
+width:120px;
+}
+
+/* ========================= */
+/* UNLOCK EFFECT */
+/* ========================= */
+
+.unlocking{
+animation:unlockPulse .8s;
+}
+
+@keyframes unlockPulse{
+
+0%{
+transform:translateX(-50%) scale(1);
+}
+
+50%{
+transform:translateX(-50%) scale(1.25);
+}
+
+100%{
+transform:translateX(-50%) scale(1);
+}
+
+}
+
+/* ========================= */
+/* MOBILE RESPONSIVE */
+/* ========================= */
+
+@media(max-width:600px){
+
+.main-clock{
+font-size:92px;
+}
+
+.lock-day{
+font-size:20px;
+}
+
+.voice-status{
+font-size:12px;
+}
+
+.notification-card{
+padding:12px;
+}
+
+}
+#setFakeTimeBtn{
+width:100%;
+margin-top:10px;
+padding:12px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+font-size:16px;
+font-weight:600;
+color:white;
+background:
+linear-gradient(
+135deg,
+#4f46e5,
+#7c3aed
+);
+}

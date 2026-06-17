@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChronoSnap - Time Manipulation Simulator</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- ========================= -->
+    <!-- SETUP SCREEN -->
+    <!-- ========================= -->
+
+    <div id="setupScreen" class="setup-screen">
+
+        <div class="setup-card">
+
+            <h1>⏳ ChronoSnap</h1>
+
+            <p class="subtitle">
+                Time Manipulation Simulator
+            </p>
+
+            <div class="section">
+
+                <label>Choose Wallpaper</label>
+
+                <input type="file" id="wallpaperInput" accept="image/*">
+
+            </div>
+
+            <div class="section">
+
+                <label>Choose Fake Time</label>
+
+                <input type="text" id="fakeTimeInput" placeholder="13:21">
+
+                <button id="setFakeTimeBtn">
+                    OK
+                </button>
+
+            </div>
+
+            <div class="section">
+
+                <label>Preview Time</label>
+
+                <div id="previewTime">
+                    --:--
+                </div>
+
+            </div>
+
+            <div class="section">
+
+                <button id="activateMagicBtn">
+                    ✨ Activate Magic Mode
+                </button>
+
+            </div>
+
+            <div class="instructions">
+
+                <h3>How It Works</h3>
+
+                <ul>
+
+                    <li>Choose any fake time.</li>
+
+                    <li>Activate Magic Mode.</li>
+
+                    <li>The lock screen becomes active.</li>
+
+                    <li>Say <strong>"Magic"</strong> to restore reality.</li>
+
+                    <li>The clock animates back to real time.</li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- LOCK SCREEN -->
+    <!-- ========================= -->
+
+    <div id="lockScreen" class="lock-screen hidden">
+
+        <div class="wallpaper-overlay"></div>
+
+        <!-- Status Bar -->
+
+        <div class="status-bar">
+
+            <div class="status-left">
+
+                <span id="statusTime">
+                    9:41
+                </span>
+
+            </div>
+
+            <div class="status-right">
+
+                <span>📶</span>
+                <span>📡</span>
+
+                <span id="batteryText">
+                    100%
+                </span>
+
+                <span>🔋</span>
+
+            </div>
+
+        </div>
+
+        <!-- Dynamic Island -->
+
+        <div class="dynamic-island">
+
+            <div class="island-dot"></div>
+
+            <div class="island-bar"></div>
+
+            <div class="island-dot"></div>
+
+        </div>
+
+        <!-- Lock Icon -->
+
+        <div id="lockIcon" class="lock-icon">
+
+            🔒
+
+        </div>
+
+        <!-- Date -->
+
+        <div class="date-container">
+
+            <div id="lockDay" class="lock-day">
+                Wednesday
+            </div>
+
+            <div id="lockDate" class="lock-date">
+                June 17
+            </div>
+
+        </div>
+
+        <!-- Clock -->
+
+        <div class="clock-container">
+
+            <div id="mainClock" class="main-clock">
+                04:00
+            </div>
+
+        </div>
+
+        <!-- Voice Status -->
+
+
+
+        <!-- Reality Message -->
+
+        <div id="realityMessage" class="reality-message">
+
+            Reality Restored
+
+        </div>
+
+        <!-- Notifications -->
+
+        <div class="notifications">
+
+            <div class="notification-card">
+
+                <div class="notification-title">
+                    Messages
+                </div>
+
+                <div class="notification-body">
+                    2 new messages
+                </div>
+
+            </div>
+
+            <div class="notification-card">
+
+                <div class="notification-title">
+                    Weather
+                </div>
+
+                <div class="notification-body">
+                    27°C • Clear Sky
+                </div>
+
+            </div>
+
+            <div class="notification-card">
+
+                <div class="notification-title">
+                    Calendar
+                </div>
+
+                <div class="notification-body">
+                    Meeting at 5 PM
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Flashlight -->
+
+        <div class="flashlight-btn">
+
+            🔦
+
+        </div>
+
+        <!-- Camera -->
+
+        <div class="camera-btn">
+
+            📷
+
+        </div>
+
+        <!-- Swipe Indicator -->
+
+        <div class="swipe-indicator">
+
+            ⬆ Swipe Up To Unlock
+
+        </div>
+
+        <!-- Magic Exit Button -->
+
+        <button id="exitMagicBtn" class="exit-magic-btn">
+
+            ✨
+
+        </button>
+
+    </div>
+
+    <!-- Reality Flash -->
+
+
+
+    <!-- Deactivate Modal -->
+
+    <div id="deactivateModal" class="modal hidden">
+
+        <div class="modal-content">
+
+            <h2>
+                Deactivate Magic Mode?
+            </h2>
+
+            <div class="modal-buttons">
+
+                <button id="yesDeactivate">
+                    YES
+                </button>
+
+                <button id="noDeactivate">
+                    NO
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
