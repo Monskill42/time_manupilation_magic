@@ -401,7 +401,7 @@ function detectSnap() {
 
         }
 
-        if (peak > 180) {
+        if (peak > 170) {
 
             console.log(
                 "Snap Detected!"
@@ -432,8 +432,11 @@ function restoreReality() {
 
     if (!magicMode) return;
 
+    
+
     snapListening = false;
 
+    magicMode = false;
 
 
     lockIcon.innerText = "🔓";
@@ -653,20 +656,20 @@ window.addEventListener("load", async () => {
     try {
 
         micStream =
-        await navigator.mediaDevices.getUserMedia({
-            audio: true
-        });
+            await navigator.mediaDevices.getUserMedia({
+                audio: true
+            });
 
         micStream
-        .getTracks()
-        .forEach(track => track.stop());
+            .getTracks()
+            .forEach(track => track.stop());
 
         console.log(
             "Microphone permission granted."
         );
 
     }
-    catch(error){
+    catch (error) {
 
         console.log(
             "Microphone permission denied."
@@ -696,3 +699,40 @@ setInterval(() => {
     updateDateDisplay();
 
 }, 60000);
+// =========================
+// DOUBLE TAP / DOUBLE CLICK
+// =========================
+
+let lastTap = 0;
+
+function handleDoubleTap() {
+
+    if (!magicMode) return;
+
+    const now = Date.now();
+
+    if (
+        now - lastTap < 400
+    ) {
+
+        console.log(
+            "Double Tap Detected!"
+        );
+
+        restoreReality();
+
+    }
+
+    lastTap = now;
+
+}
+
+lockScreen.addEventListener(
+    "touchstart",
+    handleDoubleTap
+);
+
+lockScreen.addEventListener(
+    "click",
+    handleDoubleTap
+);
