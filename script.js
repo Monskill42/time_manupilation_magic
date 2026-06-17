@@ -1,6 +1,19 @@
+
+
+
+let micStream = null;
+
+let audioContext;
+let analyser;
+let microphone;
+let snapListening = false;
 // =========================
 // ELEMENTS
 // =========================
+const fullscreenBtn =
+    document.getElementById(
+        "fullscreenBtn"
+    );
 
 const setupScreen =
     document.getElementById("setupScreen");
@@ -35,8 +48,7 @@ const statusTime =
 const batteryText =
     document.getElementById("batteryText");
 
-const voiceStatus =
-    document.getElementById("voiceStatus");
+
 
 const realityMessage =
     document.getElementById("realityMessage");
@@ -65,7 +77,7 @@ const dynamicIsland =
 // VARIABLES
 // =========================
 
-let fakeTime = "04:00";
+let fakeTime = "";
 
 let magicMode = false;
 
@@ -73,28 +85,52 @@ let wallpaperURL = null;
 
 let clockInterval = null;
 
-let recognition = null;
 
-let listening = false;
+fullscreenBtn.addEventListener(
+    "click",
+    async () => {
 
+        try {
+
+            if (
+                !document.fullscreenElement
+            ) {
+
+                await document
+                    .documentElement
+                    .requestFullscreen();
+
+            }
+
+        }
+        catch (error) {
+
+            console.log(
+                error
+            );
+
+        }
+
+    }
+);
 
 // =========================
 // PREVIEW TIME
 // =========================
 
 const setFakeTimeBtn =
-document.getElementById("setFakeTimeBtn");
+    document.getElementById("setFakeTimeBtn");
 
 setFakeTimeBtn.addEventListener("click", () => {
 
     const selectedTime =
-    document.getElementById("fakeTimeInput").value;
+        document.getElementById("fakeTimeInput").value;
 
     console.log("Selected Time:", selectedTime);
 
     alert("Selected Time = " + selectedTime);
 
-    if(selectedTime === ""){
+    if (selectedTime === "") {
 
         alert("Input value is empty!");
 
@@ -104,7 +140,7 @@ setFakeTimeBtn.addEventListener("click", () => {
     fakeTime = selectedTime;
 
     document.getElementById("previewTime").textContent =
-    selectedTime;
+        selectedTime;
 
 });
 
@@ -168,14 +204,16 @@ function updateRealClock() {
 
     const now = new Date();
 
+    const hours =
+        String(now.getHours())
+            .padStart(2, "0");
+
+    const minutes =
+        String(now.getMinutes())
+            .padStart(2, "0");
+
     const currentTime =
-        now.toLocaleTimeString(
-            [],
-            {
-                hour: "2-digit",
-                minute: "2-digit"
-            }
-        );
+        `${hours}:${minutes}`;
 
     mainClock.innerText =
         currentTime;
@@ -249,97 +287,140 @@ activateMagicBtn.addEventListener(
     "click",
     () => {
 
+        if (fakeTime === "") {
+
+            alert(
+                "Please press OK after selecting a time."
+            );
+
+            return;
+        }
+        if (
+            !document.fullscreenElement
+        ) {
+
+            document.documentElement
+                .requestFullscreen()
+                .catch(() => { });
+
+        }
+
         magicMode = true;
 
-        setupScreen.classList.add(
-            "hidden"
-        );
+        setupScreen.classList.add("hidden");
 
-        lockScreen.classList.remove(
-            "hidden"
-        );
+        lockScreen.classList.remove("hidden");
 
         if (wallpaperURL) {
             lockScreen.style.backgroundImage =
                 `url(${wallpaperURL})`;
         }
 
-        fakeTime =
-            fakeTimeInput.value || "04:00";
 
         displayFakeTime();
 
         updateDateDisplay();
 
         updateBattery();
+        startSnapDetection();
 
-        startListening();
 
     });
 // =========================
 // SPEECH RECOGNITION
 // =========================
 
-function startListening() {
+async function startSnapDetection() {
 
-    const SpeechRecognition =
-        window.SpeechRecognition ||
-        window.webkitSpeechRecognition;
+    try {
 
-    if (!SpeechRecognition) {
-        voiceStatus.innerText =
-            "Speech Recognition Not Supported";
-        return;
+        micStream =
+            await navigator.mediaDevices.getUserMedia({
+                audio: true
+            });
+
+        audioContext =
+            new AudioContext();
+
+        analyser =
+            audioContext.createAnalyser();
+
+        microphone =
+            audioContext.createMediaStreamSource(
+                micStream
+            );
+
+        microphone.connect(analyser);
+
+        analyser.fftSize = 2048;
+
+        snapListening = true;
+
+        detectSnap();
+
     }
+    catch (error) {
 
-    recognition =
-        new SpeechRecognition();
-
-    recognition.continuous = true;
-    recognition.interimResults = false;
-    recognition.lang = "en-US";
-
-    listening = true;
-
-
-
-    recognition.onresult = (event) => {
-
-        const transcript =
-            event.results[
-                event.results.length - 1
-            ][0].transcript.toLowerCase();
-
-        console.log(
-            "Voice:",
-            transcript
+        alert(
+            "Microphone access required."
         );
 
-        if (
-            transcript.includes("magic")
+        console.log(error);
+
+    }
+
+}
+function detectSnap() {
+
+    const data =
+        new Uint8Array(
+            analyser.frequencyBinCount
+        );
+
+    function check() {
+
+        if (!snapListening) return;
+
+        analyser.getByteFrequencyData(
+            data
+        );
+
+        let peak = 0;
+
+        for (
+            let i = 0;
+            i < data.length;
+            i++
         ) {
+
+            if (data[i] > peak) {
+
+                peak = data[i];
+
+            }
+
+        }
+
+        if (peak > 180) {
+
+            console.log(
+                "Snap Detected!"
+            );
+
+            snapListening = false;
+
             restoreReality();
+
+            return;
         }
 
-    };
+        requestAnimationFrame(
+            check
+        );
 
-    recognition.onerror = () => {
+    }
 
-
-    };
-
-    recognition.onend = () => {
-
-        if (
-            magicMode &&
-            listening
-        ) {
-            recognition.start();
-        }
-
-    };
-
-    recognition.start();
+    check();
 
 }
 
@@ -351,11 +432,9 @@ function restoreReality() {
 
     if (!magicMode) return;
 
-    listening = false;
+    snapListening = false;
 
-    if (recognition) {
-        recognition.stop();
-    }
+
 
     lockIcon.innerText = "🔓";
 
@@ -442,7 +521,7 @@ function runTimeWarp() {
             mainClock.innerText =
                 `${h}:${m}`;
 
-        }, 80);
+        }, 800);
 }
 
 // =========================
@@ -451,12 +530,7 @@ function runTimeWarp() {
 
 function finishRealityRestore() {
 
-    realityMessage.classList.add(
-        "show"
-    );
 
-    realityMessage.innerText =
-        "Reality Restored";
 
     updateRealClock();
 
@@ -466,13 +540,7 @@ function finishRealityRestore() {
             1000
         );
 
-    setTimeout(() => {
 
-        realityMessage.classList.remove(
-            "show"
-        );
-
-    }, 2500);
 
     setTimeout(() => {
 
@@ -530,14 +598,20 @@ noDeactivate.addEventListener(
 yesDeactivate.addEventListener(
     "click",
     () => {
+        snapListening = false;
 
-        magicMode = false;
+        if (micStream) {
 
-        listening = false;
+            micStream
+                .getTracks()
+                .forEach(track => track.stop());
 
-        if (recognition) {
-            recognition.stop();
         }
+        magicMode = false;
+        micStream = null;
+
+
+
 
         clearInterval(
             clockInterval
@@ -559,8 +633,7 @@ yesDeactivate.addEventListener(
             "show"
         );
 
-        voiceStatus.innerText =
-            '🎤 Listening For "Magic"';
+
 
     });
 
@@ -571,7 +644,37 @@ yesDeactivate.addEventListener(
 updateDateDisplay();
 
 updateBattery();
+// =========================
+// MICROPHONE PERMISSION
+// =========================
 
+window.addEventListener("load", async () => {
+
+    try {
+
+        micStream =
+        await navigator.mediaDevices.getUserMedia({
+            audio: true
+        });
+
+        micStream
+        .getTracks()
+        .forEach(track => track.stop());
+
+        console.log(
+            "Microphone permission granted."
+        );
+
+    }
+    catch(error){
+
+        console.log(
+            "Microphone permission denied."
+        );
+
+    }
+
+});
 
 
 // =========================
