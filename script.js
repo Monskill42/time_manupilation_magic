@@ -523,7 +523,7 @@ function detectDarkness() {
             );
 
             if (
-                brightness < 80
+                brightness < 60
             ) {
 
                 console.log(
