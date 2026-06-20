@@ -1,20 +1,24 @@
-
-
-
-let micStream = null;
-
-let audioContext;
-let analyser;
-let microphone;
-let snapListening = false;
 // =========================
 // ELEMENTS
 // =========================
+
+const saveWallpaperBtn =
+    document.getElementById(
+        "saveWallpaperBtn"
+    );
 const fullscreenBtn =
     document.getElementById(
         "fullscreenBtn"
     );
+const extraMinutesInput =
+    document.getElementById(
+        "extraMinutesInput"
+    );
 
+const generateFakeTimeBtn =
+    document.getElementById(
+        "generateFakeTimeBtn"
+    );
 const setupScreen =
     document.getElementById("setupScreen");
 
@@ -76,7 +80,19 @@ const dynamicIsland =
 // =========================
 // VARIABLES
 // =========================
+let darknessInterval = null;
+let cameraStream = null;
 
+const cameraFeed =
+    document.getElementById(
+        "cameraFeed"
+    );
+
+const motionCanvas =
+    document.getElementById(
+        "motionCanvas"
+    );
+let fakeClockInterval = null;
 let fakeTime = "";
 
 let magicMode = false;
@@ -143,28 +159,82 @@ setFakeTimeBtn.addEventListener("click", () => {
         selectedTime;
 
 });
+// =========================
+// LOAD SAVED WALLPAPER
+// =========================
+
+const savedWallpaper =
+    localStorage.getItem(
+        "chronoWallpaper"
+    );
+
+if (savedWallpaper) {
+
+    wallpaperURL =
+        savedWallpaper;
+
+    lockScreen.style.backgroundImage =
+        `url(${savedWallpaper})`;
+
+}
 
 // =========================
 // WALLPAPER UPLOAD
 // =========================
 
-wallpaperInput.addEventListener("change", (e) => {
+wallpaperInput.addEventListener(
+    "change",
+    (e) => {
 
-    const file = e.target.files[0];
+        const file =
+            e.target.files[0];
 
-    if (!file) return;
+        if (!file) return;
 
-    const reader = new FileReader();
+        const reader =
+            new FileReader();
 
-    reader.onload = function (event) {
+        reader.onload =
+            function (event) {
 
-        wallpaperURL = event.target.result;
+                wallpaperURL =
+                    event.target.result;
 
-    };
+                lockScreen.style.backgroundImage =
+                    `url(${wallpaperURL})`;
 
-    reader.readAsDataURL(file);
+            };
 
-});
+        reader.readAsDataURL(file);
+
+    }
+);
+// save button code 
+saveWallpaperBtn.addEventListener(
+    "click",
+    () => {
+
+        if (!wallpaperURL) {
+
+            alert(
+                "Select a wallpaper first."
+            );
+
+            return;
+
+        }
+
+        localStorage.setItem(
+            "chronoWallpaper",
+            wallpaperURL
+        );
+
+        alert(
+            "Wallpaper Saved!"
+        );
+
+    }
+);
 
 // =========================
 // DATE FORMATTER
@@ -264,18 +334,57 @@ async function updateBattery() {
 
 function displayFakeTime() {
 
-    if (fakeTime === "") {
-        alert(
-            "Press OK after selecting a fake time."
-        );
-        return;
-    }
+    let parts =
+        fakeTime.split(":");
+
+    let hours =
+        parseInt(parts[0]);
+
+    let minutes =
+        parseInt(parts[1]);
 
     mainClock.innerText =
         fakeTime;
 
     statusTime.innerText =
         fakeTime;
+
+    fakeClockInterval =
+        setInterval(() => {
+
+            minutes++;
+
+            if (minutes > 59) {
+
+                minutes = 0;
+                hours++;
+
+            }
+
+            if (hours > 23) {
+
+                hours = 0;
+
+            }
+
+            const h =
+                String(hours)
+                    .padStart(2, "0");
+
+            const m =
+                String(minutes)
+                    .padStart(2, "0");
+
+            mainClock.innerText =
+                `${h}:${m}`;
+
+            statusTime.innerText =
+                `${h}:${m}`;
+
+            fakeTime =
+                `${h}:${m}`;
+
+        }, 60000);
 
 }
 
@@ -307,6 +416,7 @@ activateMagicBtn.addEventListener(
 
         magicMode = true;
 
+
         setupScreen.classList.add("hidden");
 
         lockScreen.classList.remove("hidden");
@@ -316,111 +426,139 @@ activateMagicBtn.addEventListener(
                 `url(${wallpaperURL})`;
         }
 
-
+        startDarknessDetection();
         displayFakeTime();
 
         updateDateDisplay();
 
         updateBattery();
-        startSnapDetection();
+
 
 
     });
 // =========================
-// SPEECH RECOGNITION
-// =========================
+// darkemess detection 
 
-async function startSnapDetection() {
+async function startDarknessDetection() {
 
     try {
 
-        micStream =
+        cameraStream =
             await navigator.mediaDevices.getUserMedia({
-                audio: true
+                video: true
             });
 
-        audioContext =
-            new AudioContext();
+        cameraFeed.srcObject =
+            cameraStream;
 
-        analyser =
-            audioContext.createAnalyser();
+        cameraFeed.onloadedmetadata = () => {
 
-        microphone =
-            audioContext.createMediaStreamSource(
-                micStream
-            );
+            detectDarkness();
 
-        microphone.connect(analyser);
-
-        analyser.fftSize = 2048;
-
-        snapListening = true;
-
-        detectSnap();
+        };
 
     }
     catch (error) {
-
-        alert(
-            "Microphone access required."
-        );
 
         console.log(error);
 
     }
 
 }
-function detectSnap() {
+function detectDarkness() {
 
-    const data =
-        new Uint8Array(
-            analyser.frequencyBinCount
-        );
+    const ctx =
+        motionCanvas.getContext("2d");
 
-    function check() {
+    darknessInterval =
+        setInterval(() => {
 
-        if (!snapListening) return;
+            if (
+                !cameraFeed.videoWidth
+            ) {
+                return;
+            }
 
-        analyser.getByteFrequencyData(
-            data
-        );
+            motionCanvas.width = 160;
+            motionCanvas.height = 120;
 
-        let peak = 0;
+            ctx.drawImage(
+                cameraFeed,
+                0,
+                0,
+                160,
+                120
+            );
 
-        for (
-            let i = 0;
-            i < data.length;
-            i++
-        ) {
+            const frame =
+                ctx.getImageData(
+                    0,
+                    0,
+                    160,
+                    120
+                );
 
-            if (data[i] > peak) {
+            let brightness = 0;
 
-                peak = data[i];
+            for (
+                let i = 0;
+                i < frame.data.length;
+                i += 4
+            ) {
+
+                brightness +=
+                    frame.data[i] +
+                    frame.data[i + 1] +
+                    frame.data[i + 2];
 
             }
 
-        }
-
-        if (peak > 260) {
+            brightness =
+                brightness /
+                (frame.data.length / 4);
 
             console.log(
-                "Snap Detected!"
+                "Brightness:",
+                brightness
             );
 
-            snapListening = false;
+            if (
+                brightness < 80
+            ) {
 
-            restoreReality();
+                console.log(
+                    "Darkness Detected"
+                );
 
-            return;
-        }
+                clearInterval(
+                    darknessInterval
+                );
 
-        requestAnimationFrame(
-            check
-        );
+                darknessInterval = null;
 
-    }
+                // Vibration feedback
 
-    check();
+                if (
+                    navigator.vibrate
+                ) {
+
+                    navigator.vibrate(
+                        [300, 100, 300]
+                    );
+
+                }
+
+                // Wait 2 seconds
+
+                setTimeout(() => {
+
+                    restoreReality();
+
+                }, 2000);
+
+            }
+
+        }, 300);
 
 }
 
@@ -429,15 +567,36 @@ function detectSnap() {
 // =========================
 
 function restoreReality() {
+    if (cameraStream) {
 
+        cameraStream
+            .getTracks()
+            .forEach(track =>
+                track.stop()
+            );
+
+        cameraFeed.srcObject =
+            null;
+
+        cameraStream = null;
+
+    }
     if (!magicMode) return;
 
-    
+    if (darknessInterval) {
 
-    snapListening = false;
+        clearInterval(
+            darknessInterval
+        );
 
+        darknessInterval = null;
+
+    }
+
+
+
+    clearInterval(fakeClockInterval);
     magicMode = false;
-
 
     lockIcon.innerText = "🔓";
 
@@ -601,17 +760,9 @@ noDeactivate.addEventListener(
 yesDeactivate.addEventListener(
     "click",
     () => {
-        snapListening = false;
 
-        if (micStream) {
-
-            micStream
-                .getTracks()
-                .forEach(track => track.stop());
-
-        }
         magicMode = false;
-        micStream = null;
+
 
 
 
@@ -647,39 +798,50 @@ yesDeactivate.addEventListener(
 updateDateDisplay();
 
 updateBattery();
+
+
 // =========================
-// MICROPHONE PERMISSION
+// setting the time
 // =========================
 
-window.addEventListener("load", async () => {
+generateFakeTimeBtn.addEventListener(
+    "click",
+    () => {
 
-    try {
+        const extra =
+            parseInt(
+                extraMinutesInput.value
+            );
 
-        micStream =
-            await navigator.mediaDevices.getUserMedia({
-                audio: true
-            });
+        if (
+            isNaN(extra)
+        ) {
+            return;
+        }
 
-        micStream
-            .getTracks()
-            .forEach(track => track.stop());
+        const now =
+            new Date();
 
-        console.log(
-            "Microphone permission granted."
+        now.setMinutes(
+            now.getMinutes() + extra
         );
 
+        const h =
+            String(now.getHours())
+                .padStart(2, "0");
+
+        const m =
+            String(now.getMinutes())
+                .padStart(2, "0");
+
+        fakeTime =
+            `${h}:${m}`;
+
+        previewTime.textContent =
+            fakeTime;
+
     }
-    catch (error) {
-
-        console.log(
-            "Microphone permission denied."
-        );
-
-    }
-
-});
-
-
+);
 // =========================
 // OPTIONAL AUTO BATTERY
 // =========================
@@ -736,3 +898,4 @@ lockScreen.addEventListener(
     "click",
     handleDoubleTap
 );
+
