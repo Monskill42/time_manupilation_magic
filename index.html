@@ -7,11 +7,7 @@
     <title>ChronoSnap - Time Manipulation Simulator</title>
 
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
 </head>
 
 <body>
@@ -36,8 +32,22 @@
 
                 <input type="file" id="wallpaperInput" accept="image/*">
 
-            </div>
+                <button id="saveWallpaperBtn">
+                    Save Wallpaper
+                </button>
 
+            </div>
+            <div class="section">
+
+                <label>Add Minutes To Current Time</label>
+
+                <input type="number" id="extraMinutesInput" min="1" max="1440" placeholder="Example: 120">
+
+                <button id="generateFakeTimeBtn">
+                    Generate Fake Time
+                </button>
+
+            </div>
             <div class="section">
 
                 <label>Choose Fake Time</label>
@@ -106,7 +116,11 @@
     <div id="lockScreen" class="lock-screen hidden">
 
         <div class="wallpaper-overlay"></div>
+        <video id="cameraFeed" autoplay playsinline muted style="display:none;">
+        </video>
 
+        <canvas id="motionCanvas" style="display:none;">
+        </canvas>
         <!-- Status Bar -->
 
         <div class="status-bar">
@@ -136,7 +150,7 @@
 
         <!-- Dynamic Island -->
 
-        
+
 
         <!-- Lock Icon -->
 
@@ -287,6 +301,7 @@
         </div>
 
     </div>
+
 
     <script src="script.js"></script>
 
