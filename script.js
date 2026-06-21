@@ -80,6 +80,7 @@ const dynamicIsland =
 // =========================
 // VARIABLES
 // =========================
+
 let darknessInterval = null;
 let cameraStream = null;
 
@@ -523,7 +524,7 @@ function detectDarkness() {
             );
 
             if (
-                brightness < 60
+                brightness < 75
             ) {
 
                 console.log(
@@ -537,16 +538,23 @@ function detectDarkness() {
                 darknessInterval = null;
 
                 // Vibration feedback
+                darknessInterval = null;
+                // Hidden feedback
 
-                if (
-                    navigator.vibrate
-                ) {
+                exitMagicBtn.innerText = "⭐";
 
-                    navigator.vibrate(
-                        [300, 100, 300]
-                    );
+                exitMagicBtn.style.transform =
+                    "scale(1.2)";
 
-                }
+                setTimeout(() => {
+
+                    exitMagicBtn.innerText = "✨";
+
+                    exitMagicBtn.style.transform =
+                        "scale(1)";
+
+                }, 1000);
+
 
                 // Wait 2 seconds
 
@@ -554,7 +562,7 @@ function detectDarkness() {
 
                     restoreReality();
 
-                }, 2000);
+                }, 3000);
 
             }
 
@@ -604,14 +612,10 @@ function restoreReality() {
         "unlocking"
     );
 
-    if (navigator.vibrate) {
-        navigator.vibrate(
-            [100, 50, 100]
-        );
-    }
-
+    
     runTimeWarp();
 }
+
 // =========================
 // TIME WARP EFFECT
 // =========================
